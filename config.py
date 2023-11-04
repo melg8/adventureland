@@ -109,14 +109,24 @@ SDK_UPLOAD_PASSWORD=ELEMENT_PASSWORD=secrets.sdk_password
 
 def gdi(self=None):
 	domain=GG()
+	# TODO; Theese settings should be configured in an "environment" config file
 	if is_sdk:
-		domain.base_url=self and "http://%s"%self.request.headers.get("Host") or "http://%s.%s"%(sdk_domain[1],sdk_domain[2])
-		domain.pref_url=self and "http://%s"%self.request.headers.get("Host") or "http://%s.%s"%(sdk_domain[1],sdk_domain[2])
-		domain.server_ip="192.168.1.125"
+		requestHost = self and self.request.headers.get("Host")
+		logging.info("self.request.headers.get(host): %s"%(requestHost))
+		domain.base_url=self and "http://%s"%requestHost or "http://%s.%s"%(sdk_domain[1],sdk_domain[2])
+		domain.pref_url=self and "http://%s"%requestHost or "http://%s.%s"%(sdk_domain[1],sdk_domain[2])
+		domain.server_ip="192.168.1.125" # unsure how important overriding this ip is
 		domain.stripe_pkey=stripe_pkey
 		domain.stripe_enabled=False
 		domain.https_mode=False
-		domain.domain=self and ["www",self.request.headers.get("Host").split(".")[0],self.request.headers.get("Host").split(".")[1]] or sdk_domain
+		# This fails because self.request.headers.get("Host") = adventureland:8083 when running in for example docker
+		if requestHost and "." in requestHost:
+			requestHostSplit = requestHost.split(".")
+			# this forces www on the domain, don't know if we want that
+			domain.domain=self and ["www",requestHostSplit[0],requestHostSplit[1]] or sdk_domain
+		else:
+			domain.domain = requestHost
+
 	else:
 		protocol="http"
 		if self and "https" in (self.request.headers.get("Cf-Visitor") or ""): protocol="https"
