@@ -284,6 +284,8 @@ def security_threat(self,domain):
 	logging.info(referer)
 	if referer.startswith("127.0.0.1"): return False
 	if referer.startswith("0.0.0.0"): return False
+	if is_sdk and referer.startswith("localhost"): return False # Allows us to create development accounts in a docker environment
+	# TODO: potential issue if domain consist of more than 3 identifiers e.g. test.localhost.co.uk
 	if not (referer.startswith("%s.%s.%s/"%(domain.domain[0],domain.domain[1],domain.domain[2])) or referer.startswith("%s.%s/"%(domain.domain[1],domain.domain[2])) or referer=="%s.%s.%s"%(domain.domain[0],domain.domain[1],domain.domain[2]) or referer=="%s.%s"%(domain.domain[1],domain.domain[2])):
 		self.response.out.write("Threat detected")
 		return True
@@ -1796,9 +1798,21 @@ def get_domain(self=None,url=None):
 		if self: url=self.request.url
 		try: url=url[0:url.index("/",8)+1] #in case the url doesn't end with / [25/09/15]
 		except: pass
-		url=url.replace("http://",""); url=url.replace("https://",""); url=url.replace("/",""); url=url.split(".")
-		if len(url)==2: return ["www",url[0],url[1]]
-		return [url[-3],url[-2],url[-1]] #to prevent the www.geobird.com.test.com-like url's [25/09/15]
+		
+		if is_sdk: logging.info("get_domain %s"%(url))
+		
+		url=url.replace("http://",""); 
+		url=url.replace("https://",""); 
+		url=url.replace("/",""); 
+		
+		if "." in url:
+			url=url.split(".")
+			if len(url)==2: return ["www",url[0],url[1]]
+			return [url[-3],url[-2],url[-1]] #to prevent the www.geobird.com.test.com-like url's [25/09/15]
+		elif ":" in url:
+			# there is a port in this url and it allows us to create an account when running in a devcontainer using docker
+			url = url.split(":")
+			return ["",url[0], ""] # should return ["","adventureland", ""] in a devcontainer / docker for example
 	else:
 		if not is_sdk: return live_domain
 		else: return sdk_domain
@@ -1806,13 +1820,27 @@ def get_domain(self=None,url=None):
 def get_cookie(self,name):
 	return self.request.cookies.get(name)
 
-def set_cookie(self,name,value):
+def get_cookie_domain(self):
 	subdomain,domainname,toplevel=get_domain(self)
-	self.response.set_cookie(name,to_str(value),max_age=86400*365*5, path='/',domain='.%s.%s'%(domainname,toplevel),secure=secure_cookies)
+
+	if domainname and toplevel:
+		return '.%s.%s'%(domainname,toplevel)
+	
+	if domainname:
+		# supporting devcontainer, this just returns localhost as the domain name, also makes authentication work when logging in
+		return domainname
+	
+	return None
+
+def set_cookie(self,name,value):
+	cookie_domain = get_cookie_domain(self)
+
+	self.response.set_cookie(name,to_str(value),max_age=86400*365*5, path='/',domain=cookie_domain,secure=secure_cookies)
 
 def delete_cookie(self,name):
-	subdomain,domainname,toplevel=get_domain(self)
-	self.response.delete_cookie(name,path='/',domain='.%s.%s'%(domainname,toplevel))
+	cookie_domain = get_cookie_domain(self)
+
+	self.response.delete_cookie(name,path='/',domain=cookie_domain)
 
 class StrLogHandler(logging.Handler):
 	def __init__(self, output):
