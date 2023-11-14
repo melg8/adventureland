@@ -175,8 +175,8 @@ var events = {
 	pinkgoo: 0, // every N minutes - 60
 	snowman: 20 * 60, // 1200 normally - 60 - at sprocess_game_data
 	egghunt: 0, // every N minutes - 60
+	halloween: false,
 	// RANDOM
-	halloween: true,
 	goblin: false,
 	goldenbat: 160000,
 	cutebee: 960000,
@@ -5691,6 +5691,9 @@ function init_io() {
 				var offering = player.items[data.offering_num];
 				if (offering && G.items[offering.name].type != "offering") {
 					return socket.emit("game_response", "compound_invalid_offering");
+				}
+				if (!scroll) {
+					return socket.emit("game_response", "compound_no_scroll");
 				}
 				if (!item0 || (item0.level || 0) != data.clevel) {
 					return fail_response("no_item");
