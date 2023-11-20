@@ -1673,6 +1673,20 @@ function create_new_item(name, quantity) {
 	return new_item;
 }
 
+function create_new_sitem(item, quantity) {
+	let s_item = create_new_item(item.name, quantity);
+	if (item.v) {
+		s_item.v = item.v;
+	}
+	if (item.data) {
+		s_item.data = item.data;
+	}
+	if (item.p) {
+		s_item.p = item.p;
+	}
+	return s_item;
+}
+
 function aadd_item(player, new_item) {
 	// admin [24/06/23]
 	add_item(player, new_item, { announce: false });
@@ -3476,7 +3490,7 @@ function complete_attack(attacker, target, info) {
 						add_condition(target, c);
 					}
 				});
-				if (info.procs && attacker.a.sugarrush && Math.random() < 0.0025) {
+				if (info.procs && attacker.a.sugarrush && Math.random() < attacker.a.sugarrush.attr0 / 100) {
 					def.trigger = "sugarrush";
 					add_condition(attacker, "sugarrush");
 					disappearing_text(attacker.socket, attacker, "SUGAR RUSH!", { xy: 1, size: "huge", color: "sugar", nv: 1 }); //target.is_player&&"huge"||undefined
@@ -4115,7 +4129,7 @@ function init_io() {
 					}
 					if (method == "cm") {
 						var add = 1;
-						var len = data.message.length;
+						var len = JSON.stringify(data.message).length;
 						var mult = 1;
 						if (len > 100) {
 							add = 2;
@@ -4125,6 +4139,9 @@ function init_io() {
 							add = 10;
 						} else if (len > 50000) {
 							add = 20;
+						}
+						if (!Array.isArray(data.to)) {
+							data.to = [data.to];
 						}
 						// console.log("add: "+add+"len: "+len);
 						if (data.to.length > 1) {
@@ -5675,6 +5692,12 @@ function init_io() {
 		socket.on("compound", function (data) {
 			try {
 				var player = players[socket.id];
+				if (!Array.isArray(data.items) || data.items.length != 3) {
+					return fail_response("no_item");
+				}
+				if (!Number.isInteger(data.items[0]) || !Number.isInteger(data.items[1]) || !Number.isInteger(data.items[2])) {
+					return fail_response("no_item");
+				}
 				var item0 = player.items[data.items[0]];
 				var item1 = player.items[data.items[1]];
 				var item2 = player.items[data.items[2]];
@@ -5695,7 +5718,7 @@ function init_io() {
 				if (!scroll) {
 					return socket.emit("game_response", "compound_no_scroll");
 				}
-				if (!item0 || (item0.level || 0) != data.clevel) {
+				if (!item0 || !item1 || !item2) {
 					return fail_response("no_item");
 				}
 				if (!player.computer && simple_distance(G.maps.main.compound, player) > B.sell_dist) {
@@ -5723,13 +5746,16 @@ function init_io() {
 				) {
 					return socket.emit("game_response", "compound_mismatch");
 				}
+				if ((item0.level || 0) != data.clevel) {
+					return fail_response("no_item");
+				}
 				if (!def.compound) {
 					return socket.emit("game_response", "compound_cant");
 				}
 				if (scroll_def.type != "cscroll" || grade > scroll_def.grade) {
 					return socket.emit("game_response", "compound_incompatible_scroll");
 				}
-				if (data.items[0] == data.items[1] || data.items[1] == data.items[2] || data.items[0] == data.items[2]) {
+				if (item0 == item1 || item1 == item2 || item0 == item2) {
 					return socket.emit("game_response", { response: "misc_fail", place: "compound", failed: true });
 				}
 				if (item0.l || item1.l || item2.l) {
@@ -6990,13 +7016,7 @@ function init_io() {
 				}
 
 				if (item.q) {
-					s_item = create_new_item(item.name, data.q);
-					if (item.v) {
-						s_item.v = item.v;
-					}
-					if (item.data) {
-						s_item.data = item.data;
-					}
+					s_item = create_new_sitem(item, data.q);
 					num = add_item(receiver, s_item, { announce: false });
 				} else {
 					s_item = item;
@@ -7185,6 +7205,18 @@ function init_io() {
 					item.level = 13;
 					player.items[data.num] = item;
 					player.citems[data.num] = cache_item(player.items[data.num]);
+
+					const announce = !item.silent;
+
+					if (announce && !player.stealth) {
+						broadcast("server_message", {
+							message: player.name + " received " + item_to_phrase(item),
+							color: colors.server_success,
+							item: cache_item(item),
+							type: "server_usuccess",
+							name: player.name,
+						});
+					}
 				}
 				xy_emit(G.maps.spookytown.ref.poof, "upgrade", { type: "poof", success: 1 });
 			}
@@ -7460,7 +7492,7 @@ function init_io() {
 			}
 
 			if (item.q) {
-				num = add_item(player, create_new_item(item.name, data.q), { announce: false });
+				num = add_item(player, create_new_sitem(item, data.q), { announce: false });
 			} else {
 				num = add_item(player, item, { announce: false });
 			}
