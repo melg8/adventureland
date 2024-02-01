@@ -471,9 +471,6 @@ function is_map_pvp(map, allow_safe) {
 }
 
 function is_same(player1, player2, party) {
-	if (is_sdk && player1.name != player2.name) {
-		return false;
-	}
 	if (player1.name == player2.name) {
 		return true;
 	}
@@ -2092,7 +2089,7 @@ function event_loop() {
 			["holidayseason", "grinch"],
 			["holidayseason", "snowman"],
 			["lunarnewyear", "dragold"],
-			["lunarnewyear", "tiger", true],
+			//["lunarnewyear", "tiger", true],
 			["valentines", "pinkgoo", true],
 			["egghunt", "wabbit", true],
 		];
@@ -3462,7 +3459,10 @@ function exchange(player, name, args) {
 						G.items[item.name].compound ||
 						character_slots.includes(G.items[item.name].type))
 				) {
-					item.p = "glitched";
+					add_item_property(item, "glitched");
+				}
+				if (drop[4]) {
+					add_item_property(item, drop[4]);
 				}
 				if (name == "glitch") {
 					args.phrase = "Glitched";
