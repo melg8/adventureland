@@ -171,7 +171,7 @@ var events = {
 	// SEASONS
 	holidayseason: false,
 	lunarnewyear: true,
-	valentines: false,
+	valentines: true,
 	pinkgoo: 0, // every N minutes - 60
 	snowman: 20 * 60, // 1200 normally - 60 - at sprocess_game_data
 	egghunt: 0, // every N minutes - 60
@@ -5048,8 +5048,15 @@ function init_io() {
 				if (simple_distance(player, { in: f, map: f, x: ref[0], y: ref[1] }) > 120) {
 					return fail_response("transport_cant_reach");
 				}
-				if (data.name && instances[data.name] && instances[data.name].map == data.place) {
-					transport_player_to(player, data.name);
+				if (data.name) {
+					// Player requested to enter an existing instance
+					if (instances[data.name] && instances[data.name].map == data.place) {
+						// The instance exists
+						transport_player_to(player, data.name);
+					} else {
+						// The instance doesn't exist
+						return fail_response("transport_cant_invalid");
+					}
 				} else {
 					if (!consume_one_by_id(player, item)) {
 						return fail_response("transport_cant_item");
