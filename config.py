@@ -129,6 +129,8 @@ update_notes=[
 	"Improve Computer and Super Computer UI #106",
 	"Change equip_batch's base cost from 1 to 0.5 #108",
 	"Fix throw skill to pierce immunity #109",
+]
+
 #IMPORTANT: SPECIAL PAGE RULES ARE NEEDED: https://dash.cloudflare.com/b6f5a13bded5fdd273e4a1cd3777162d/adventure.land/page-rules - uss1 / eus1 was best
 ip_to_subdomain=environment.IP_TO_SUBDOMAIN
 HTTPS_MODE=True #IMPORTANT: converts server IP's to subdomain urls at create_server_api [17/11/18]
