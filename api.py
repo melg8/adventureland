@@ -70,7 +70,7 @@ def signup_or_login_api(**args):
 		user.info.signupth=signupth
 		user.info.email=email
 		user.info.ip=get_ip(self); user.info.country=get_country(self)
-		user.info.characters=[]; user.info.slots=5
+		user.info.characters=[]; user.info.slots=8
 		if domain.electron: user.info.slots=8
 		user.info.items=[]
 		user.info.everification=randomStr(12)
