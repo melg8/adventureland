@@ -127,8 +127,8 @@ update_notes=[
 ]
 ip_to_subdomain={ #IMPORTANT: SPECIAL PAGE RULES ARE NEEDED: https://dash.cloudflare.com/b6f5a13bded5fdd273e4a1cd3777162d/adventure.land/page-rules - uss1 / eus1 was best
 	"35.187.255.184":"asia1",
-	"35.246.244.105":"eu1",
-	"35.228.96.241":"eu2",
+	"127.0.0.1":"eu1",
+	"127.0.0.1":"eu2",
 	"35.234.72.136":"eupvp",
 	"35.184.37.35":"us1",
 	"34.67.188.57":"us2",
@@ -142,8 +142,8 @@ always_amazon_ses=True
 SCREENSHOT_MODE=is_sdk and False
 game_name="Adventure Land"
 appengine_id="twodimensionalgame"
-live_domain='adventure.land'
-sdk_domain='thegame.com'
+live_domain='http://127.0.0.1'
+sdk_domain='http://127.0.0.1'
 SDK_UPLOAD_PASSWORD=ELEMENT_PASSWORD=secrets.sdk_password
 
 def init_request(request):
@@ -166,7 +166,7 @@ def gdi(request=None):
 
 		domain.base_url=protocol + "://" + hostname
 		domain.pref_url=domain.base_url
-		domain.server_ip="192.168.1.125"
+		domain.server_ip="127.0.0.1"
 		domain.stripe_pkey=stripe_pkey
 		domain.stripe_enabled=False
 		domain.https_mode=False
