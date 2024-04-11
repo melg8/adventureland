@@ -1,6 +1,7 @@
 # Adventure Land solo self-found challenge
 
-Version 1.2, created 03.04.2024.
+Version 1.3, created 03.04.2024.
+Last update: 11.04.2024.
 This document describes current solo self-found rules for Adventure Land game.
 
 - This document can evolve, but ruleset should be described in this document and uploaded to github repository
@@ -18,3 +19,4 @@ This document describes current solo self-found rules for Adventure Land game.
 - Client can only use data exposed via default client-server api, no secret keys or debug information from server can be used on client side
 - Bugs/exploits known or discovered during challenge should not be used in any way
 - Video recording (or time-lapse) of challenge can be uploaded to youtube.com
+- All updates regarding seasonal events are merged from upstream at time they appear in opensource github repository. If start/end of event commit to opensource version is delayed compared to current official server state, no manual synchronization of events start/end should be performed.
