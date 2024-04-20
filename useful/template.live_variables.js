@@ -12,6 +12,7 @@ module.exports = {
   steam_key: "8aXXXXXXXXX...",
   steam_web_key: "B4XXXXXXX...",
   steam_partner_key: "F9XXXXXXX...",
+  is_sdk: false,
   close_timeout: 24000,
   ip_limit: 3,
   character_limit: 5,

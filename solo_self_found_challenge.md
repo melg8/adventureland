@@ -15,6 +15,7 @@ This document describes current solo self-found rules for Adventure Land game.
 - Created account have 8 free character slots
 - Server restarts only for server maintenance (Can't restart server for intentional reduction of mobs x modifier or forced mobs respawn)
 - Server state should be continuous (No save-scumming via restoring of previous server state, no date manipulation on server)
+- Server should run under is_sdk: false setting to have same relogin timeouts as live server.
 - Buying items found by goblin in wizard's cave is forbidden. (Cause it gives items that you can't farm yourself yet basically for free after each restart)
 - Client can only use data exposed via default client-server api, no secret keys or debug information from server can be used on client side
 - Bugs/exploits known or discovered during challenge should not be used in any way
