@@ -71,7 +71,7 @@ from libraries.country_to_latlon import c_to_ll
 #from libraries import get_image_size
 
 if os.environ.get('SERVER_SOFTWARE', '').startswith('Dev') or not os.getenv('GAE_ENV', '').startswith('standard'):
-	is_sdk=True; is_production=is_appengine=False
+	is_sdk=True; is_production=is_appengine=False # Force production mode. 
 	stripe.verify_ssl_certs = False
 	stripe.api_key=secrets.stripe_test_api_key
 	stripe_pkey=secrets.stripe_test_pkey
@@ -81,6 +81,8 @@ else:
 	stripe_pkey=secrets.stripe_api_key #publishable-key
 steam_web_apikey=secrets.steam_web_apikey #for domain adventure.land: https://partner.steamgames.com/doc/webapi_overview/auth#create_publisher_key
 steam_publisher_web_apikey=secrets.steam_publisher_web_apikey #from: https://partner.steamgames.com/pub/group/48241/61965/
+
+is_sdk=True; 
 
 from design.animations import *
 from design.achievements import *

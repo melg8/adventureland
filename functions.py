@@ -101,10 +101,10 @@ def item_value(item):
 	if item.get("q",0): gold*=item.get("q",0)
 	level=item.get("level",0)
 	if items[item["name"]].get("upgrade"):
-		if is_sdk: level=min(level,12)
+		# if is_sdk: level=min(level,12) - changed.
 		gold*=[1,1,1.1,1.4,1.6,2,4,8,16,50,500,800,1600,20000][level]
 	if items[item["name"]].get("compound"):
-		if is_sdk: level=min(level,5)
+		# if is_sdk: level=min(level,5) - changed.
 		gold*=[1,3,9,27,81,243,800,3600,15000,50000][level]
 	return gold
 
@@ -705,7 +705,7 @@ def update_characters(user,reason=None,name=None,shells=0):
 			try:
 				server=get_by_iid("server|%s"%character.server)
 				ip=server.actual_ip
-				if is_sdk: ip="0.0.0.0"
+				if is_sdk: ip="127.0.0.1"
 				if not reason:
 					fetch_url("http://%s:%s"%(ip,server.port),aevent="cupdate",spass=secrets.ACCESS_MASTER,cash=user.cash,id=character.info.name,ncash=shells)
 				elif reason=="friends":
@@ -1053,13 +1053,13 @@ def verify_steam_installs():
 
 def server_eval(server,code,data={}):
 	ip=server.actual_ip
-	if is_sdk: ip="0.0.0.0"
+	if is_sdk: ip="127.0.0.1"
 	return json.loads(fetch_url("http://%s:%s"%(ip,server.port),aevent="eval",spass=secrets.ACCESS_MASTER,code=code.replace("+","%2B"),data=json.dumps(data).replace("+","%2B")))
 
 def server_eval_safe(server,code,data={}):
 	try:
 		ip=server.actual_ip
-		if is_sdk: ip="0.0.0.0"
+		if is_sdk: ip="127.0.0.1"
 		return json.loads(fetch_url("http://%s:%s"%(ip,server.port),aevent="eval",spass=secrets.ACCESS_MASTER,code=code.replace("+","%2B"),data=json.dumps(data).replace("+","%2B")))
 	except:
 		log_trace()
@@ -2183,7 +2183,7 @@ def encode_unicodes(args):
 
 def fetch_url(url_u,**dct):
 	if url_u.startswith("/"):
-		if is_sdk: url_u="http://thegame.com"+url_u
+		if is_sdk: url_u="http://127.0.0.1:8083"+url_u
 		else: url_u="https://adventure.land"+url_u
 	if dct or dct.pop("use_post",""):
 		encode_unicodes(dct)
