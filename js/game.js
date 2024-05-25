@@ -2877,7 +2877,6 @@ function init_socket(args)
 		call_code_function("trigger_event","ccreport",data);
 	});
 	socket.on('action',function(data){
-		if(is_sdk) console.log(data);
 		var attacker=get_entity(data.attacker);
 		var target=get_entity(data.target),no_target=false;
 		if(!attacker) return;
